@@ -11,7 +11,8 @@ import (
 type UserService interface {
 	CreateUser(user *model.User) error
 	Authenticate(username, password string) (*model.User, error)
-	GetAllUsers() ([]model.User, error) // tuỳ bạn dùng
+	GetAllUsers() ([]model.User, error)
+	InActiveUser(id uint) error
 }
 
 type userService struct {
@@ -47,4 +48,13 @@ func (s *userService) Authenticate(username, password string) (*model.User, erro
 
 func (s *userService) GetAllUsers() ([]model.User, error) {
 	return s.repo.FindAll()
+}
+
+func (s *userService) InActiveUser(id uint) error {
+	user, err := s.repo.FindById(id)
+	if err != nil {
+		return err
+	}
+	user.Active = false
+	return s.repo.Update(user)
 }

@@ -2,10 +2,10 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 	"time"
 	"user-service/config"
 	"user-service/internal/cache"
@@ -15,11 +15,12 @@ import (
 )
 
 type AuthHandler struct {
-	service service.UserService
+	userService service.UserService
+	mailService service.MailService
 }
 
-func NewAuthHandler(s service.UserService) *AuthHandler {
-	return &AuthHandler{s}
+func NewAuthHandler(u service.UserService, m service.MailService) *AuthHandler {
+	return &AuthHandler{u, m}
 }
 
 var ctx = context.Background()
@@ -30,7 +31,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Invalid request"})
 	}
 
-	user, err := h.service.Authenticate(req.Username, req.Password)
+	user, err := h.userService.Authenticate(req.Username, req.Password)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, echo.Map{"error": "Invalid credentials"})
 	}
@@ -42,7 +43,6 @@ func (h *AuthHandler) Login(c echo.Context) error {
 		"exp":      time.Now().Add(time.Hour * 24).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	fmt.Println(config.GetJWTSecret())
 	signedToken, err := token.SignedString(config.GetJWTSecret())
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Could not generate token"})
@@ -65,9 +65,17 @@ func (h *AuthHandler) Register(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Invalid input"})
 	}
 
-	if err := h.service.CreateUser(&user); err != nil {
+	if err := h.userService.CreateUser(&user); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Could not create user"})
 	}
+
+	token, err := h.mailService.GenerateEmailOTP(user.ID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Could not generate email OTP"})
+	}
+
+	verifyLink := "http://your-frontend.com/verify?token=" + token
+	go h.mailService.SendVerifyMail(user.Email, verifyLink)
 
 	return c.JSON(http.StatusCreated, echo.Map{"message": "User registered successfully"})
 }
@@ -94,4 +102,15 @@ func (h *AuthHandler) Logout(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{"message": "Logged out successfully"})
+}
+func (h *AuthHandler) InActiveUser(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Invalid input"})
+	}
+	err = h.userService.InActiveUser(uint(id))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Could not create user"})
+	}
+	return c.JSON(http.StatusOK, echo.Map{"message": "User InActive successfully"})
 }

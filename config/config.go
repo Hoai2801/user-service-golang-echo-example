@@ -36,6 +36,11 @@ func InitDB() {
 	if err != nil {
 		log.Fatalf("AutoMigrate failed: %v", err)
 	}
+
+	err = DB.AutoMigrate(&model.EmailVerificationToken{})
+	if err != nil {
+		log.Fatalf("AutoMigrate failed: %v", err)
+	}
 }
 
 func LoadEnv() {
@@ -51,4 +56,12 @@ func GetJWTSecret() []byte {
 		log.Fatal("SECRET_KEY not set in environment")
 	}
 	return []byte(secret)
+}
+
+func GetString(key string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		log.Printf("Warning: %s is not set in environment", key)
+	}
+	return value
 }

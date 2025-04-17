@@ -15,11 +15,14 @@ func main() {
 	config.LoadEnv()
 	config.InitDB()
 	cache.InitializeRedis()
+	// DI
 	userRepo := repository.NewUserRepository(config.DB)
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService)
 
-	authHandler := handler.NewAuthHandler(userService)
+	otpRepo := repository.NewOTPRepository(config.DB)
+	mailService := service.NewMailService(otpRepo)
+	authHandler := handler.NewAuthHandler(userService, mailService)
 
 	e := echo.New()
 	routes.RegisterRoutes(e, userHandler, authHandler)

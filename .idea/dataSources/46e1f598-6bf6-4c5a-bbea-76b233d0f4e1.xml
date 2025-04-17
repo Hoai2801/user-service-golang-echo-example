@@ -1145,7 +1145,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <Current>1</Current>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-04-17.08:52:49</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-04-17.10:47:09</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <user id="294" parent="1" name="admin">
@@ -1174,62 +1174,5 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     <user id="299" parent="1" name="root">
       <Host>localhost</Host>
     </user>
-    <table id="300" parent="293" name="users">
-      <DetailsLevel>3</DetailsLevel>
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_0900_ai_ci</CollationName>
-    </table>
-    <column id="301" parent="300" name="id">
-      <AutoIncrement>1</AutoIncrement>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>bigint unsigned|0s</StoredType>
-    </column>
-    <column id="302" parent="300" name="created_at">
-      <Position>2</Position>
-      <StoredType>datetime(3)|0s</StoredType>
-    </column>
-    <column id="303" parent="300" name="updated_at">
-      <Position>3</Position>
-      <StoredType>datetime(3)|0s</StoredType>
-    </column>
-    <column id="304" parent="300" name="deleted_at">
-      <Position>4</Position>
-      <StoredType>datetime(3)|0s</StoredType>
-    </column>
-    <column id="305" parent="300" name="name">
-      <Position>5</Position>
-      <StoredType>longtext|0s</StoredType>
-    </column>
-    <column id="306" parent="300" name="email">
-      <Position>6</Position>
-      <StoredType>varchar(191)|0s</StoredType>
-    </column>
-    <column id="307" parent="300" name="password">
-      <Position>7</Position>
-      <StoredType>longtext|0s</StoredType>
-    </column>
-    <index id="308" parent="300" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="309" parent="300" name="uni_users_email">
-      <ColNames>email</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="310" parent="300" name="idx_users_deleted_at">
-      <ColNames>deleted_at</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="311" parent="300" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <key id="312" parent="300" name="uni_users_email">
-      <UnderlyingIndexName>uni_users_email</UnderlyingIndexName>
-    </key>
   </database-model>
 </dataSource>
